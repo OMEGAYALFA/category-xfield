@@ -18,6 +18,9 @@ define( 'ROOT_DIR', substr( dirname(  __FILE__ ), 0, -12 ) );
 define( 'ENGINE_DIR', ROOT_DIR . '/engine' );
 
 include ENGINE_DIR . '/data/config.php';
+if ( $config['version_id'] > "10.2" ) {
+	date_default_timezone_set ( $config['date_adjust'] );
+}
 require_once ENGINE_DIR.'/modules/functions.php';
 @include_once ROOT_DIR . '/language/' . $config['langs'] . '/website.lng';
 
