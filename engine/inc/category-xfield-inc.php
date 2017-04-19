@@ -1,16 +1,12 @@
 <?php
 /*
-=====================================================
- Category XField v1.0.1
------------------------------------------------------
- http://dle.net.tr
------------------------------------------------------
- Copyright (c) 2014 Mehmet Hanoğlu
------------------------------------------------------
- Lisans : GPL License
-=====================================================
- Dosya: category-xfield-inc.php
-=====================================================
+=============================================
+ Name      : MWS Category XField v1.1
+ Author    : Mehmet Hanoğlu ( MaRZoCHi )
+ Site      : http://dle.net.tr/
+ License   : MIT License
+ Date      : 19.04.2017
+=============================================
 */
 
 if( !defined( 'DATALIFEENGINE' ) OR !defined( 'LOGGED_IN' ) ) { die( "Hacking attempt!" ); }
@@ -27,7 +23,7 @@ function showRow( $title = "", $description = "", $field = "", $hide = false, $i
 		<td class=\"col-xs-2 col-md-5 settingstd\">{$field}</td>
 	</tr>";
 }
-	
+
 function makeDropDown($options, $name, $selected, $id = false) {
 	$id = ( $id == false ) ? "" : " id=\"" . $id . "\"";
 	$output = "<select{$id} class=\"uniform\" name=\"{$name}\">\r\n";
@@ -41,7 +37,7 @@ function makeDropDown($options, $name, $selected, $id = false) {
 }
 
 function mainTable_head( $title, $right = "", $id = false ) {
-	if ( $id ) { 
+	if ( $id ) {
 		$id = " id=\"{$id}\"";
 		$style = " style=\"display:none\"";
 	} else { $style = ""; }
@@ -157,7 +153,7 @@ $(document).ready(function() {
 			$("#text").show();
 		} else if ( selected == "textarea" ) {
 			$(".data").hide();
-			$("#textarea").show();
+			$("#textarea").hide();
 		} else if ( selected == "select" ) {
 			$(".data").hide();
 			$("#select").show();
@@ -205,9 +201,7 @@ echo <<< HTML
 <tr id="textarea" class="data">
 	<td valign="top"><b>Çok Satırlı Yazı</b><br />Her iki alan için aynı sıralamayı kullanarak <b>|</b> ile ayırın. Boşluklar silinecektir!<br /><b>Örnek:</b><br />key1<b>|</b>key2<b>|</b>key3<br />val<b>|</b>val2<b>|</b>val3
 	<td align="middle">
-		BB / HTML Kod Kullanımı : <input name="save[textarea_f1c]" type="checkbox" class="icheck" value="1" />
 		&nbsp;&nbsp;
-		<input name="save[textarea_f2c]" type="checkbox" class="icheck" value="1" checked /> : Düz Yazı Modu
 	</td>
 </tr>
 HTML;
@@ -271,6 +265,7 @@ $(document).ready(function() {
 		}
 	});
 	$("#{$data[1]}").show();
+	$("#textarea").hide();
 	$("#field_type").change(function() {
 		$(".data").hide();
 		var selected = $(this).val();
@@ -279,7 +274,7 @@ $(document).ready(function() {
 		} else if ( selected == "text" ) {
 			$("#text").show();
 		} else if ( selected == "textarea" ) {
-			$("#textarea").show();
+			$("#textarea").hide();
 		} else if ( selected == "select" ) {
 			$("#select").show();
 		}
@@ -330,9 +325,7 @@ echo <<< HTML
 <tr id="textarea" class="data">
 	<td valign="top"><b>Çok Satırlı Yazı</b><br /><span class="small">Her iki alan için aynı sıralamayı kullanarak <b>|</b> ile ayırın. Boşluklar silinecektir!<br /><b>Örnek:</b><br />key1<b>|</b>key2<b>|</b>key3<br />val<b>|</b>val2<b>|</b>val3</span>
 	<td align="middle">
-		BB / HTML Kod Kullanımı : <input name="save[textarea_f1c]" class="icheck" type="checkbox" value="1" {$check1}/>
 		&nbsp;&nbsp;
-		<input name="save[textarea_f2c]" class="icheck" type="checkbox" value="1" {$check2}/> : Düz Yazı Modu
 	</td>
 </tr>
 HTML;

@@ -19,7 +19,7 @@ if ( ! defined( 'E_DEPRECATED' ) ) {
 
 abstract class VQMod {
 	public static $_vqversion = '2.4.1';
-	
+
 	private static $_modFileList = array();
 	private static $_mods = array();
 	private static $_filesModded = array();
@@ -59,11 +59,11 @@ abstract class VQMod {
 		if(!class_exists('DOMDocument')) {
 			die('VQMod::bootup - ERROR - YOU NEED THE PHP "DOMDocument" EXTENSION INSTALLED TO USE VQMod');
 		}
-		
-		if(strtoupper(substr(PHP_OS,0,3)) == 'WIN') {			
+
+		if(strtoupper(substr(PHP_OS,0,3)) == 'WIN') {
 			self::$windows = true;
 		}
-		
+
 		self::$directorySeparator = defined('DIRECTORY_SEPARATOR') ? DIRECTORY_SEPARATOR : '/';
 
 		if(!$path){
@@ -73,16 +73,16 @@ abstract class VQMod {
 
 		self::$logging = (bool) $logging;
 		self::$log = new VQModLog();
-		
+
 		$replacesPath = self::path(self::$pathReplaces);
 		$replaces = array();
 		if($replacesPath) {
 			include_once($replacesPath);
 			self::$_lastModifiedTime = filemtime($replacesPath);
 		}
-		
+
 		// ADDED - start
-		if ( self::$backup ) {
+		if ( self::$backup && class_exists( 'ZipArchive' ) ) {
 			self::$backup_file = new ZipArchive();
 			$backupFile = $path . "/" . self::$vqCachePath . date("Y-m-d-H-i-s") . ".zip";
 			self::$backup = self::$backup_file->open( $backupFile, ZipArchive::CREATE);
@@ -91,7 +91,7 @@ abstract class VQMod {
 			}
 		}
 		// ADDED - end
-		
+
 		self::$_replaces = !is_array($replaces) ? array() : $replaces;
 		//self::_getMods(); // DELETED
 		//self::_loadProtected(); // DELETED
@@ -119,7 +119,7 @@ abstract class VQMod {
 		}
 	}
 	// ADDED - end
-	
+
 	/**
 	 * VQMod::modCheck()
 	 *
@@ -223,10 +223,10 @@ abstract class VQMod {
 
 	/**
 	 * VQMod::dirCheck()
-	 * 
+	 *
 	 * @param string $path
 	 * @return null
-	 * @description Creates $path folder if it doesn't exist 
+	 * @description Creates $path folder if it doesn't exist
 	 */
 	public static function dirCheck($path) {
 		if(!is_dir($path)) {
@@ -327,7 +327,7 @@ abstract class VQMod {
 							}
 						}
 					}
-					
+
 					self::$_mods[] = new VQModObject($mod, $modFile);
 				} else {
 					self::$log->write('VQMod::_parseMods - DOM UNABLE TO LOAD: ' . $modFile);
@@ -380,19 +380,19 @@ abstract class VQMod {
 
 	// ADDED - start
 	private static function _backupFile($file, $data) {
-		if ( self::$backup ) {
+		if ( self::$backup && class_exists( 'ZipArchive' ) ) {
 			$name = substr( $file, strlen( self::$_cwd ) );
 			self::$backup_file->addFromString( $name, $data );
 		}
 	}
 	public function close() {
-		if ( self::$backup ) {
+		if ( self::$backup && class_exists( 'ZipArchive' ) ) {
 			self::$backup_file->addFromString( "info.txt", self::$backup_info  );
 			self::$backup_file->close();
 		}
 	}
 	// ADDED - end
-	
+
 	/**
 	 * VQMod::_setCwd()
 	 *
@@ -406,7 +406,7 @@ abstract class VQMod {
 
 	/**
 	 * VQMod::_realpath()
-	 * 
+	 *
 	 * @param string $file
 	 * @return string
 	 * @description Returns real path of any path, adding directory slashes if necessary
@@ -435,12 +435,12 @@ abstract class VQMod {
 	private static function _checkMatch($modFilePath, $checkFilePath) {
 		$modFilePath = str_replace('\\', '/', $modFilePath);
 		$checkFilePath = str_replace('\\', '/', $checkFilePath);
-		
+
 		if(self::$windows) {
 			$modFilePath = strtolower($modFilePath);
 			$checkFilePath = strtolower($checkFilePath);
 		}
-		
+
 		if(strpos($modFilePath, '*') !== false) {
 			$modFilePath = preg_replace_callback('~([^*]+)~', array('self', '_quotePath'), $modFilePath);
 			$modFilePath = str_replace('*', '[^/]*', $modFilePath);
@@ -448,7 +448,7 @@ abstract class VQMod {
 		} else {
 			$return = $modFilePath == $checkFilePath;
 		}
-		
+
 		return $return;
 
 	}
@@ -644,9 +644,9 @@ class VQModObject {
 					}
 				}
 			}
-			
+
 			$indexCount = 0;
-			
+
 			$tmp = $this->_explodeData($tmp);
 			$lineMax = count($tmp) - 1;
 
@@ -675,7 +675,7 @@ class VQModObject {
 						}
 						break;
 					}
-					
+
 					if($mod['search']->regex == 'true') {
 						$pos = @preg_match($mod['search']->getContent(), $line);
 						if($pos === false) {
@@ -706,11 +706,11 @@ class VQModObject {
 								$offset = ($lineNum + $mod['search']->offset > $lineMax) ? $lineMax : $lineNum + $mod['search']->offset;
 								$tmp[$offset] = $tmp[$offset] . "\n" . $mod['add']->getContent();
 								break;
-								
+
 								case 'ibefore':
 								$tmp[$lineNum] = str_replace($mod['search']->getContent(), $mod['add']->getContent() . $mod['search']->getContent(), $line);
 								break;
-								
+
 								case 'iafter':
 								$tmp[$lineNum] = str_replace($mod['search']->getContent(), $mod['search']->getContent() . $mod['add']->getContent(), $line);
 								break;
@@ -754,7 +754,7 @@ class VQModObject {
 			ksort($tmp);
 			$tmp = $this->_implodeData($tmp);
 		}
-		
+
 		VQMod::$fileModding = false;
 
 		$data = $tmp;
@@ -769,15 +769,15 @@ class VQModObject {
 	 */
 	private function _parseMods(DOMNode $node){
 		$files = $node->getElementsByTagName('file');
-		
+
 		$replaces = VQMod::$_replaces;
 
 		foreach($files as $file) {
 			$path = $file->getAttribute('path') ? $file->getAttribute('path') : '';
 			$filesToMod = explode(',', $file->getAttribute('name'));
-			
+
 			foreach($filesToMod as $filename) {
-				
+
 				$fileToMod = $path . $filename;
 				if(!empty($replaces)) {
 					foreach($replaces as $r) {
@@ -786,10 +786,10 @@ class VQModObject {
 						}
 					}
 				}
-				
+
 				$error = ($file->hasAttribute('error')) ? $file->getAttribute('error') : 'log';
 				$fullPath = VQMod::path($fileToMod);
-	
+
 				if(!$fullPath || !file_exists($fullPath)){
 					if(strpos($fileToMod, '*') !== false) {
 						$fullPath = VQMod::getCwd() . $fileToMod;
@@ -798,7 +798,7 @@ class VQModObject {
 							$skip = ($error == 'log') ? ' (SKIPPED)' : ' (ABORTING MOD)';
 							VQMod::$log->write('VQModObject::parseMods - Could not resolve path for [' . $fileToMod . ']' . $skip, $this);
 						}
-	
+
 						if ($error == 'log' || $error == 'skip') {
 							continue;
 						} elseif ($error == 'abort') {
@@ -806,20 +806,20 @@ class VQModObject {
 						}
 					}
 				}
-	
+
 				$operations = $file->getElementsByTagName('operation');
-	
+
 				foreach($operations as $opIndex => $operation) {
 					$error = ($operation->hasAttribute('error')) ? $operation->getAttribute('error') : 'abort';
 					$ignoreif = $operation->getElementsByTagName('ignoreif')->item(0);
-					
+
 					if($ignoreif) {
 						$ignoreif = new VQSearchNode($ignoreif);
 					} else {
 						$ignoreif = false;
 					}
-					
-					
+
+
 					$this->mods[$fullPath][] = array(
 						'search' 		=> new VQSearchNode($operation->getElementsByTagName('search')->item(0)),
 						'add' 			=> new VQAddNode($operation->getElementsByTagName('add')->item(0)),

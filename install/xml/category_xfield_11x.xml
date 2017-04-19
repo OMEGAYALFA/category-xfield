@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+        <id>Category XField</id>
+        <version>1.1</version>
+        <vqmver>2.4.1</vqmver>
+ 		<author>MaRZoCHi</author>
+		<file name="engine/modules/main.php">
+			<operation>
+				<ignoreif><![CDATA[include ENGINE_DIR . "/modules/category.xfield.module.php";]]></ignoreif>
+				<search position="before"><![CDATA[$tpl->compile ( 'main' );]]></search>
+				<add><![CDATA[
+// Category XField v1.1
+include ENGINE_DIR . "/modules/category.xfield.module.php";
+// Category XField v1.1
+]]></add>
+			</operation>
+        </file>
+		<file name="engine/modules/show.full.php">
+			<operation>
+				<ignoreif><![CDATA[require_once ENGINE_DIR . "/modules/category.xfield.module.php";]]></ignoreif>
+				<search position="before"><![CDATA[if( strpos( $tpl->copy_template, "[catlist=" ) !== false ) {]]></search>
+				<add><![CDATA[
+		// Category XField v1.1
+		require_once ENGINE_DIR . "/modules/category.xfield.module.php";
+		// Category XField v1.1
+]]></add>
+			</operation>
+        </file>
+		<file name="engine/modules/show.short.php">
+			<operation>
+				<ignoreif><![CDATA[include ENGINE_DIR . "/modules/category.xfield.module.php";]]></ignoreif>
+				<search position="before"><![CDATA[if( strpos( $tpl->copy_template, "[catlist=" ) !== false ) {]]></search>
+				<add><![CDATA[
+		// Category XField v1.1
+		include ENGINE_DIR . "/modules/category.xfield.module.php";
+		// Category XField v1.1
+]]></add>
+			</operation>
+        </file>
+		<file name="engine/modules/show.custom.php">
+			<operation>
+				<ignoreif><![CDATA[include ENGINE_DIR . "/modules/category.xfield.module.php";]]></ignoreif>
+				<search position="before"><![CDATA[if( strpos( $tpl->copy_template, "[catlist=" ) !== false ) {]]></search>
+				<add><![CDATA[
+	// Category XField v1.1
+	include ENGINE_DIR . "/modules/category.xfield.module.php";
+	// Category XField v1.1
+]]></add>
+			</operation>
+        </file>
+		<file name="engine/inc/categories.php">
+			<operation>
+				<ignoreif><![CDATA[require_once ENGINE_DIR . "/classes/category.xfield.class.php";]]></ignoreif>
+				<search position="before"><![CDATA[$db->query( "INSERT INTO " . PREFIX . "_category (parentid, name, alt_name,]]></search>
+				<add><![CDATA[
+	// Category XField v1.1
+	require_once ENGINE_DIR . "/classes/category.xfield.class.php";
+	$xfields = $xf->parse( $_POST['catxf'], $db );
+	// Category XField v1.1
+]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[, xfields,]]></ignoreif>
+				<search position="replace"><![CDATA[full_tpl, metatitle]]></search>
+				<add><![CDATA[full_tpl, xfields, metatitle]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[, '$xfields',]]></ignoreif>
+				<search position="replace"><![CDATA['$full_tpl', '$meta_title']]></search>
+				<add><![CDATA['$full_tpl', '$xfields', '$meta_title']]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[$mws_cat_xf = $xf->resulter( $xfields, $xfielddata );]]></ignoreif>
+				<search position="after"><![CDATA[$row['news_msort'] = makeDropDown( array ("" => $lang['sys_global'], "DESC" => $lang['opt_sys_mminus'], "ASC" => $lang['opt_sys_mplus'] ), "news_msort", $row['news_msort'] );]]></search>
+				<add><![CDATA[
+	// Category XField v1.1
+	require_once ENGINE_DIR . "/classes/category.xfield.class.php";
+	$xfielddata = $xf->load( $row['xfields'] );
+	$xfields = $xf->get();
+	$mws_cat_xf = $xf->resulter( $xfields, $xfielddata );
+	// Category XField v1.1
+]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[{$mws_cat_xf}<!-- 1 -->]]></ignoreif>
+				<search position="before" offset="3"><![CDATA[<input type="submit" class="btn btn-green" value="{$lang['vote_edit']}">]]></search>
+				<add><![CDATA[
+	<!-- Category XField v1.1 -->
+	{$mws_cat_xf}<!-- 1 -->
+	<!-- Category XField v1.1 -->
+]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[xfields='{$xfields}']]></ignoreif>
+				<search position="replace"><![CDATA[$db->query( "UPDATE " . PREFIX . "_category SET parentid='$parentid', name='$cat_name', alt_name='$alt_cat_name', icon='$cat_icon', skin='$skin_name', descr='$description', keywords='$keywords', news_sort='$news_sort', news_msort='$news_msort', news_number='$news_number', short_tpl='$short_tpl', full_tpl='$full_tpl', metatitle='$meta_title', show_sub='$show_sub', allow_rss='$allow_rss' WHERE id='{$catid}'" );]]></search>
+				<add><![CDATA[
+	// Category XField v1.1
+	require_once ENGINE_DIR . "/classes/category.xfield.class.php";
+	$fields = $xf->get();
+	foreach( $_POST['catxf'] as $pfield => $data ) {
+		if ( $fields[ $pfield ][0] == "textarea" ) {
+			$_POST['catxf'][ $pfield ] = $db->safesql( str_replace( $xf->QU, " ", strip_tags( stripslashes( $data ) ) ) );
+		}
+	}
+	$xfields = $xf->parse( $_POST['catxf'], $db );	//2
+	// Category XField v1.1
+
+	$db->query( "UPDATE " . PREFIX . "_category SET parentid='$parentid', name='$cat_name', alt_name='$alt_cat_name', icon='$cat_icon', skin='$skin_name', descr='$description', keywords='$keywords', news_sort='$news_sort', news_msort='$news_msort', news_number='$news_number', short_tpl='$short_tpl', full_tpl='$full_tpl', metatitle='$meta_title', show_sub='$show_sub', allow_rss='$allow_rss', xfields='$xfields' WHERE id='{$catid}'" );]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[$mws_cat_xf = $xf->resulter( $xfields );]]></ignoreif>
+				<search position="after"><![CDATA[$skinlist = SelectSkin( '' );]]></search>
+				<add><![CDATA[
+// Category XField v1.1
+require_once ENGINE_DIR . "/classes/category.xfield.class.php";
+$xfields = $xf->get( );
+$mws_cat_xf = $xf->resulter( $xfields );
+// Category XField v1.1
+]]></add>
+			</operation>
+			<operation>
+				<ignoreif><![CDATA[{$mws_cat_xf}<!--2-->]]></ignoreif>
+				<search position="before" offset="3"><![CDATA[<button type="submit" class="btn btn-green">{$lang['vote_new']}</button>]]></search>
+				<add><![CDATA[
+	<!-- Category XField v1.1 -->
+	{$mws_cat_xf}<!--2-->
+	<!-- Category XField v1.1 -->
+]]></add>
+			</operation>
+		</file>
+</modification>

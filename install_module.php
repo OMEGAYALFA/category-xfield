@@ -1,22 +1,22 @@
 <?php
 /*
-=====================================================
- MWS Category XField v1.0.1 - by MaRZoCHi
------------------------------------------------------
- Site: http://dle.net.tr/
------------------------------------------------------
- Copyright (c) 2014
------------------------------------------------------
- Lisans: GPL License
-=====================================================
+=============================================
+ Name      : MWS Category XField v1.1
+ Author    : Mehmet Hanoğlu ( MaRZoCHi )
+ Site      : http://dle.net.tr/
+ License   : MIT License
+ Date      : 19.04.2017
+=============================================
 */
 
-if( ! defined( 'E_DEPRECATED' ) ) {
-	@error_reporting ( E_ALL ^ E_NOTICE );
-	@ini_set ( 'error_reporting', E_ALL ^ E_NOTICE );
+session_start();
+
+if ( ! defined( 'E_DEPRECATED' ) ) {
+	@error_reporting ( E_ALL ^ E_NOTICE ^ E_STRICT );
+	@ini_set ( 'error_reporting', E_ALL ^ E_NOTICE ^ E_STRICT );
 } else {
-	@error_reporting ( E_ALL ^ E_DEPRECATED ^ E_NOTICE );
-	@ini_set ( 'error_reporting', E_ALL ^ E_DEPRECATED ^ E_NOTICE );
+	@error_reporting ( E_ALL ^ E_DEPRECATED ^ E_NOTICE ^ E_STRICT );
+	@ini_set ( 'error_reporting', E_ALL ^ E_DEPRECATED ^ E_NOTICE ^ E_STRICT );
 }
 
 define ( 'DATALIFEENGINE', true );
@@ -24,67 +24,65 @@ define ( 'ROOT_DIR', dirname ( __FILE__ ) );
 define ( 'ENGINE_DIR', ROOT_DIR . '/engine' );
 define ( 'LANG_DIR', ROOT_DIR . '/language/' );
 
-require_once(ENGINE_DIR."/inc/include/functions.inc.php");
-require_once(ENGINE_DIR."/data/config.php");
-require_once(ROOT_DIR."/language/".$config['langs']."/adminpanel.lng");
-require_once(ENGINE_DIR."/classes/mysql.php");
-require_once(ENGINE_DIR."/data/dbconfig.php");
-require_once(ENGINE_DIR."/modules/sitelogin.php");
-require_once ENGINE_DIR . "/classes/install.class.php";
+require_once ENGINE_DIR . "/inc/include/functions.inc.php";
+require_once ENGINE_DIR . "/data/config.php";
+require_once ENGINE_DIR . "/classes/mysql.php";
+require_once ENGINE_DIR . "/data/dbconfig.php";
+require_once ENGINE_DIR . "/modules/sitelogin.php";
 require_once ENGINE_DIR . "/api/api.class.php";
-	
+require_once ENGINE_DIR . "/classes/install.class.php";
+
+date_default_timezone_set ( $config['date_adjust'] );
+
 @header( "Content-type: text/html; charset=" . $config['charset'] );
 require_once(ROOT_DIR."/language/".$config['langs']."/adminpanel.lng");
 
-
-$Turkish = array ( 'm01' => "Kuruluma Başla", 'm02' => "Yükle", 'm03' => "Kaldır", 'm04' => "Yapımcı", 'm05' => "Çıkış Tarihi", 'm08' => "Kurulum Tamamlandı", 'm10' => "dosyasını silerek kurulumu bitirebilirsiniz", 'm11' => "Modül Kaldırıldı", 'm21' => "Kuruluma başlamadan önce olası hatalara karşı veritabanınızı yedekleyin", 'm22' => "Eğer herşeyin tamam olduğuna eminseniz", 'm23' => "butonuna basabilirsiniz.", 'm24' => "Güncelle", 'm25' => "Site", 'm26' => "Çeviri" );
-$English = array ( 'm01' => "Start Installation", 'm02' => "Install", 'm03' => "Uninstall", 'm04' => "Author", 'm05' => "Release Date", 'm06' => "Module Page", 'm07' => "Support Forum", 'm08' => "Installation Finished", 'm10' => "delete this file to finish installation", 'm11' => "Module Uninstalled", 'm21' => "Back up your database before starting the installation for possible errors", 'm22' => "If you are sure that everything is okay, ", 'm23' => "click button.", 'm24' => "Upgrade", 'm25' => "Site", 'm26' => "Translation" );
-$Russian = array ( 'm01' => "Начало установки", 'm02' => "Установить", 'm03' => "Удалить", 'm04' => "Автор", 'm05' => "Дата выпуска", 'm06' => "Страница модуля", 'm07' => "Форум поддержки", 'm08' => "Установка завершена", 'm10' => "удалите этот фаля для окончания установки", 'm11' => "Модуль удален", 'm21' => "Сделайте резервное копирование базы данных для избежания возможных ошибок", 'm22' => "Если вы уверены что всё впорядке, ", 'm23' => "нажмите кнопку.", 'm24' => "обновлять", 'm25' => "сайт", 'm26' => "перевод" );
-$lang = array_merge( $lang, $$config['langs'] );
+$Turkish = array ( 'm01' => "Kuruluma Başla", 'm02' => "Yükle", 'm03' => "Kaldır", 'm04' => "Yapımcı", 'm05' => "Çıkış Tarihi", 'm08' => "Kurulum Tamamlandı", 'm10' => "dosyasını silerek kurulumu bitirebilirsiniz", 'm11' => "Modül Kaldırıldı", 'm21' => "Kuruluma başlamadan önce olası hatalara karşı veritabanınızı yedekleyin", 'm22' => "Eğer herşeyin tamam olduğuna eminseniz", 'm23' => "butonuna basabilirsiniz.", 'm24' => "Güncelle", 'm25' => "Site", 'm26' => "Çeviri", 'm27' => "Hata", 'm28' => "Bu modül DLE sürümünüz ile uyumlu değil.", 'm29' => "Buradan sürümünüze uygun modülü isteyebilirsiniz" );
+$English = array ( 'm01' => "Start Installation", 'm02' => "Install", 'm03' => "Uninstall", 'm04' => "Author", 'm05' => "Release Date", 'm06' => "Module Page", 'm07' => "Support Forum", 'm08' => "Installation Finished", 'm10' => "delete this file to finish installation", 'm11' => "Module Uninstalled", 'm21' => "Back up your database before starting the installation for possible errors", 'm22' => "If you are sure that everything is okay, ", 'm23' => "click button.", 'm24' => "Upgrade", 'm25' => "Site", 'm26' => "Translation", 'm27' => "Error", 'm28' => "This module not compatible with your DLE.", 'm29' => "You can ask for compatible version from here" );
+$Russian = array ( 'm01' => "Начало установки", 'm02' => "Установить", 'm03' => "Удалить", 'm04' => "Автор", 'm05' => "Дата выпуска", 'm06' => "Страница модуля", 'm07' => "Форум поддержки", 'm08' => "Установка завершена", 'm10' => "удалите этот файл для окончания установки", 'm11' => "Модуль удален", 'm21' => "Сделайте резервное копирование базы данных для избежания возможных ошибок", 'm22' => "Если вы уверены что всё в порядке, ", 'm23' => "нажмите кнопку.", 'm24' => "Обновить", 'm25' => "сайт", 'm26' => "перевод", 'm27' => "Ошибка", 'm28' => "Этот модуль не совместим с вашей версией DLE.", 'm29' => "Вы можете сделать запрос относительно совместимой версии отсюда" );
+$Ukrainian = array ( 'm01' => "Початок встановлення", 'm02' => "Встановити", 'm03' => "Видалити", 'm04' => "Автор", 'm05' => "Дата релізу", 'm06' => "Сторінка модуля", 'm07' => "Форум підтримки", 'm08' => "Встановлення завершено", 'm10' => "Видаліть цей файл, щоб завершити встановлення", 'm11' => "Модуль деінстальовано", 'm21' => "Зробіть резервне копіювання бази даних для уникнення можливих помилок", 'm22' => "Якщо ви впевнені що все гаразд, ", 'm23' => "натисніть кнопку.", 'm24' => "Оновити", 'm25' => "Сайт", 'm26' => "Переклад", 'm27' => "Помилка", 'm28' => "Цей модуль не сумісний з вашою версією DLE.", 'm29' => "Ви можете зробити запит щодо сумісної версії звідси" );
+$lang = array_merge( $lang, ${$config['langs']} );
 
 function mainTable_head( $title ) {
 	echo <<< HTML
-	<div class="box">
-		<div class="box-header">
-			<div class="title"><div class="box-nav"><font size="2">{$title}</font></div></div>
-		</div>
-		<div class="box-content">
-			<table class="table table-normal">
+<div class="box"><div class="box-header"><div class="title"><div class="box-nav"><font size="2">{$title}</font></div></div></div><div class="box-content"><table class="table table-normal">
 HTML;
 }
 
 function mainTable_foot() {
 	echo <<< HTML
-			</table>
-		</div>
-	</div>
+</table></div></div>
 HTML;
 }
 
 
 $module = array(
-	'name'	=> "MWS Category XField v1.0.1",
+	'name'	=> "MWS Category XField v1.1",
 	'desc'	=> "Kategoriler için belirleyebileceğiniz ilave alanlar",
 	'id'	=> "category-xfield-inc",
 	'icon'	=> "category-xfield.png",
-	'date'	=> "15.04.2014",
+	'date'	=> "19.04.2017",
 	'ifile'	=> "install_module.php",
 	'link'	=> "http://dle.net.tr",
 	'image'	=> "http://img.dle.net.tr/mws/category_xfield.png",
 	'author_n'	=> "Mehmet Hanoğlu (MaRZoCHi)",
 	'author_s'	=> "http://mehmethanoglu.com.tr",
-	'tran_n'	=> "",
-	'tran_s'	=> "",
 );
 
-echoheader("<i class=\"icon-film\"></i>MWS Category XField", $lang['m01'] );
+echoheader("<i class=\"icon-film\"></i>" . $module['name'], $lang['m01'] );
 
 if ( $_REQUEST['action'] == "install" ) {
-
 	$mod = new VQEdit();
-	$mod->backup = True;
 	$mod->bootup( $path = ROOT_DIR, $logging = True );
-	if ( $config['version_id'] == "10.2" ) {
+	if ( $config['version_id'] >= "11.2" ) {
+		$dle_api->install_admin_module($module['id'], $module['name'], $module['desc'], $module['icon'] , "1");
+		$mod->file( ROOT_DIR. "/install/xml/category_xfield_11x.xml" );
+		$db->query("ALTER TABLE " . PREFIX . "_category ADD COLUMN xfields text;");
+	} else if ( $config['version_id'] >= "10.3" ) {
+		$dle_api->install_admin_module($module['id'], $module['name'], $module['desc'], $module['icon'] , "1");
+		$mod->file( ROOT_DIR. "/install/xml/category_xfield_103.xml" );
+		$db->query("ALTER TABLE " . PREFIX . "_category ADD COLUMN xfields text;");
+	} else if ( $config['version_id'] = "10.2" ) {
 		$dle_api->install_admin_module($module['id'], $module['name'], $module['desc'], $module['icon'] , "1");
 		$mod->file( ROOT_DIR. "/install/xml/category_xfield_102.xml" );
 		$db->query("ALTER TABLE " . PREFIX . "_category ADD COLUMN xfields text;");
